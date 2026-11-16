@@ -32,6 +32,26 @@ remap-signal --help
 
 **Requirements:** Python 3.8 or newer.
 
+### Troubleshooting
+
+**`ERROR: ... does not appear to be a Python project: neither 'setup.py' nor 'pyproject.toml' found`**
+
+The package files are inside a subfolder of the repository. Install with the folder name
+added to the URL:
+
+```bash
+python -m pip install "git+https://github.com/NPAPINENI/Package_REMAP_SIGNAL.git#subdirectory=remap-signal_git"
+```
+
+**`error: externally-managed-environment`**
+
+You used the system `pip`. Activate your conda environment and run `python -m pip ...`
+instead of `pip ...`.
+
+**`pyBigWig` fails to install**
+
+Install it with conda (step 2), then repeat step 3.
+
 ---
 
 ## Quick start
