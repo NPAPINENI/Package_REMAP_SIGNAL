@@ -15,6 +15,7 @@ Attach **ReMap** regulatory signal to genomic sequences and generate stratified
 
 ```bash
 # 1. activate your environment
+conda activate <your-env>
 
 # 2. install dependencies
 conda install -c bioconda -c conda-forge pybigwig scikit-learn pandas numpy tqdm -y
@@ -30,26 +31,6 @@ remap-signal --help
 ```
 
 **Requirements:** Python 3.8 or newer.
-
-### Troubleshooting
-
-**`ERROR: ... does not appear to be a Python project: neither 'setup.py' nor 'pyproject.toml' found`**
-
-The package files are inside a subfolder of the repository. Install with the folder name
-added to the URL:
-
-```bash
-python -m pip install "git+https://github.com/NPAPINENI/Package_REMAP_SIGNAL.git#subdirectory=remap-signal_git"
-```
-
-**`error: externally-managed-environment`**
-
-You used the system `pip`. Activate your conda environment and run `python -m pip ...`
-instead of `pip ...`.
-
-**`pyBigWig` fails to install**
-
-Install it with conda (step 2), then repeat step 3.
 
 ---
 
