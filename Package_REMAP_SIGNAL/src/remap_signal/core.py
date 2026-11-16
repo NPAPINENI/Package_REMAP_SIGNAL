@@ -13,19 +13,22 @@ import numpy as np
 import pandas as pd
 import pyBigWig
 
+ASSEMBLIES = ("hg38", "hg19", "mm10", "mm39", "dm6")
 SPECIES_ALIASES = {
-    "human": "human", "hs": "human", "homo_sapiens": "human",
-    "hg38": "human", "hg19": "human",
-    "mouse": "mouse", "mm": "mouse", "mus_musculus": "mouse",
-    "mm10": "mouse", "mm39": "mouse",
+    "human": "hg38", "hs": "hg38", "homo_sapiens": "hg38",
+    "mouse": "mm39", "mm": "mm39", "mus_musculus": "mm39",
+    "fly": "dm6", "drosophila": "dm6",
+    **{a: a for a in ASSEMBLIES},
 }
 
 
 def _norm_species(species: str) -> str:
+    """'human' -> 'hg38', 'mouse' -> 'mm39'; assembly names (hg19, mm10, dm6, ...) pass through."""
     try:
         return SPECIES_ALIASES[species.lower()]
     except KeyError:
-        raise ValueError(f"species must be 'human' or 'mouse', got {species!r}")
+        raise ValueError(
+            f"Unknown species/assembly {species!r}. Use human, mouse, fly or one of {ASSEMBLIES}")
 
 
 class RemapSignal:
@@ -48,7 +51,10 @@ class RemapSignal:
         bigwigs: Union[str, Dict[str, str], Sequence[str]],
         fill_nan: float = 0.0,
     ):
-        self.species = _norm_species(species)
+        try:
+            self.species = _norm_species(species)
+        except ValueError:          # any other species is fine when you supply the bigWig
+            self.species = species
         self.fill_nan = fill_nan
         self.paths = self._resolve(bigwigs)
         if not self.paths:

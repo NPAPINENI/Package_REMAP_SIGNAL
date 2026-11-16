@@ -20,6 +20,12 @@ def _regions(a):
     print(f"wrote {a.output}", file=sys.stderr)
 
 
+def _download(a):
+    from .download import download
+    for sp in a.species:
+        print(download(sp, kind=a.kind, force=a.force))
+
+
 def _build(a):
     from .pipeline import build_datasets
     build_datasets(a.species, a.bigwig, a.input_root, a.output_root,
@@ -36,7 +42,7 @@ def main(argv=None):
     sub = p.add_subparsers(dest="cmd", required=True)
 
     r = sub.add_parser("regions", help="signal for regions in a TSV/CSV (chr,start,end[,sequence])")
-    r.add_argument("--species", required=True, choices=["human", "mouse"])
+    r.add_argument("--species", required=True)
     r.add_argument("--bigwigs", required=True, help="dir of .bw files, or one .bw file")
     r.add_argument("--input", required=True)
     r.add_argument("--output", required=True, help=".npz (per-base) or .tsv (summary)")
@@ -46,15 +52,20 @@ def main(argv=None):
 
     s = sub.add_parser("split", help="one file + species -> train/dev/test + sequence_*.tsv")
     s.add_argument("--input", required=True, help="TSV/CSV with chr,start,end,label,sequence")
-    s.add_argument("--species", required=True, choices=["human", "mouse"])
+    s.add_argument("--species", required=True)
     s.add_argument("--output-dir", required=True)
     s.add_argument("--bigwig", default=None, help="ReMap bigWig (default: $REMAP_HUMAN_BW / $REMAP_MOUSE_BW)")
     s.add_argument("--name", default=None)
     s.add_argument("--seed", type=int, default=42)
     s.set_defaults(func=_split)
 
+    d = sub.add_parser("download", help="download the ReMap bigWig(s) once into the cache")
+    d.add_argument("--species", nargs="+", default=["human", "mouse"])
+    d.add_argument("--force", action="store_true", help="re-download even if cached")
+    d.set_defaults(func=_download)
+
     b = sub.add_parser("build", help="per-TF folders -> signal tables + train/dev/test splits")
-    b.add_argument("--species", required=True, choices=["human", "mouse"])
+    b.add_argument("--species", required=True)
     b.add_argument("--bigwig", required=True, help="single ReMap bigWig")
     b.add_argument("--input-root", required=True)
     b.add_argument("--output-root", required=True)

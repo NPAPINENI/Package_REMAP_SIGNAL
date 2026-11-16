@@ -121,10 +121,17 @@ def make_splits(input_file, species: str, output_dir, bigwig: Optional[str] = No
 
     bigwig=None falls back to the REMAP_HUMAN_BW / REMAP_MOUSE_BW environment variable. Returns dict of DataFrames: all/train/dev/test.
     """
+    import os
     from .multi import resolve_bigwig
     from .core import _norm_species
-    sp = _norm_species(species)
-    with RemapSignal(sp, resolve_bigwig(sp, bigwig)) as rs:
+    if bigwig:                       # your own file: any species name is accepted
+        if not os.path.exists(bigwig):
+            raise FileNotFoundError(f"bigWig not found: {bigwig}")
+        path, sp = bigwig, species
+    else:                            # built-in species: human, mouse, ...
+        sp = _norm_species(species)
+        path = resolve_bigwig(sp)
+    with RemapSignal(sp, path) as rs:
         return process_file(input_file, rs, output_dir, name=name, seed=seed)
 
 

@@ -21,7 +21,7 @@ classifiers = [
 dev = ["pytest"]
 
 [project.urls]
-Homepage = "https://github.com/YOUR_USERNAME/remap-signal"
+Homepage = "https://github.com/NPAPINENI/Package_REMAP_SIGNAL"
 
 [project.scripts]
 remap-signal = "remap_signal.cli:main"

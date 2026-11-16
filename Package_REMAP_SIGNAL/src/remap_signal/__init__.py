@@ -8,3 +8,6 @@ __all__ += ["build_datasets", "process_tf", "process_file", "make_splits"]
 
 from .multi import Remap, load, resolve_bigwig  # noqa: E402
 __all__ += ["Remap", "load", "resolve_bigwig"]
+
+from .download import download  # noqa: E402
+__all__ += ["download"]
