@@ -1,11 +1,8 @@
 # REMAP_SIGNAL
 
-![tests](https://github.com/NPAPINENI/Package_REMAP_SIGNAL/actions/workflows/tests.yml/badge.svg)
-![python](https://img.shields.io/badge/python-3.8%2B-blue)
-![license](https://img.shields.io/badge/license-MIT-green)
 
 Attach **ReMap** regulatory signal to genomic sequences and generate stratified
-**train / dev / test** datasets, in a single call.
+**train(70%)/ dev(15%) / test(15%)** datasets, in a single call.
 
 - Built-in support for **human (hg38)** and **mouse (mm39)**
 - Works with **any other species** through a user-supplied bigWig
@@ -33,8 +30,7 @@ Verify the installation:
 remap-signal --help
 ```
 
-**Requirements:** Python 3.8 or newer. Internet access is needed the first time a built-in
-species is used.
+**Requirements:** Python 3.8 or newer.
 
 ---
 
@@ -57,7 +53,7 @@ remap-signal split --input my_file.tsv --species human --output-dir out_human/
 
 ## Input
 
-A tab- or comma-separated file with one row per sequence:
+A tsv/csv file with one row per sequence:
 
 | Column | Description |
 |---|---|
@@ -79,8 +75,6 @@ Written to `output_dir`:
 | `train.tsv`, `dev.tsv`, `test.tsv` | `Sequence`, `Label` |
 | `sequence_train.tsv`, `sequence_dev.tsv`, `sequence_test.tsv` | ReMap signal per base (`nucleotide_1` … `nucleotide_N`); row *i* corresponds to row *i* of the matching split file |
 | `Remap_signal_<name>.tsv` | Full table before splitting |
-
-The split is stratified by label (70 / 15 / 15, seed 42). Use `seed=` to change it.
 
 ---
 
