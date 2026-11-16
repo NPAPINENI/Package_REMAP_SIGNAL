@@ -15,7 +15,6 @@ Attach **ReMap** regulatory signal to genomic sequences and generate stratified
 
 ```bash
 # 1. activate your environment
-conda activate <your-env>
 
 # 2. install dependencies
 conda install -c bioconda -c conda-forge pybigwig scikit-learn pandas numpy tqdm -y
