@@ -1,55 +1,98 @@
-# Package: REMAP_SIGNAL
+# REMAP_SIGNAL
 
-### Instructions to get this package into your environment
-#### 1. Activate your environment
-#### 2. `conda install -c bioconda -c conda-forge pybigwig scikit-learn pandas numpy tqdm -y`
-#### 3. `python -m pip install git+https://github.com/NPAPINENI/Package_REMAP_SIGNAL.git`
+![tests](https://github.com/NPAPINENI/Package_REMAP_SIGNAL/actions/workflows/tests.yml/badge.svg)
+![python](https://img.shields.io/badge/python-3.8%2B-blue)
+![license](https://img.shields.io/badge/license-MIT-green)
+
+Attach **ReMap** regulatory signal to genomic sequences and generate stratified
+**train / dev / test** datasets, in a single call.
+
+- Built-in support for **human (hg38)** and **mouse (mm39)**
+- Works with **any other species** through a user-supplied bigWig
+- Per-base signal, aligned to each input sequence
+- Python API and command-line interface
 
 ---
 
-## What it does
+## Installation
 
-Give it sequences with their genomic positions and a species. It adds the **ReMap signal**
-for every base and splits the data into **train / dev / test**.
+```bash
+# 1. activate your environment
+conda activate <your-env>
 
-## What you give
+# 2. install dependencies
+conda install -c bioconda -c conda-forge pybigwig scikit-learn pandas numpy tqdm -y
 
-A TSV or CSV file with these columns:
+# 3. install the package
+python -m pip install git+https://github.com/NPAPINENI/Package_REMAP_SIGNAL.git
+```
 
-| chr | start | end | label | sequence |
-|---|---|---|---|---|
-| chr1 | 1000000 | 1000300 | 1 | ACGT... |
-| chr2 | 5000000 | 5000300 | 0 | TTGA... |
+Verify the installation:
 
-(`start`/`end` are 0-based; `end - start` = sequence length.)
+```bash
+remap-signal --help
+```
 
-## What you get
+**Requirements:** Python 3.8 or newer. Internet access is needed the first time a built-in
+species is used.
 
-In your output folder:
+---
 
-| file | content |
-|---|---|
-| `train.tsv`, `dev.tsv`, `test.tsv` | `Sequence`, `Label` |
-| `sequence_train.tsv`, `sequence_dev.tsv`, `sequence_test.tsv` | ReMap signal per base (`nucleotide_1 ... nucleotide_N`), same row order as above |
-
-## How to use
-
-**Human and mouse are built in:**
+## Quick start
 
 ```python
 import remap_signal as rs
 
-rs.make_splits("my_file.tsv", species="human", output_dir="out_human/")   # hg38
-rs.make_splits("my_file.tsv", species="mouse", output_dir="out_mouse/")   # mm39
+rs.make_splits("my_file.tsv", species="human", output_dir="out_human/")
+rs.make_splits("my_file.tsv", species="mouse", output_dir="out_mouse/")
 ```
 
-or from the terminal:
+Command line:
 
 ```bash
 remap-signal split --input my_file.tsv --species human --output-dir out_human/
 ```
 
-**Any other species:** give your own bigWig file with the signal.
+---
+
+## Input
+
+A tab- or comma-separated file with one row per sequence:
+
+| Column | Description |
+|---|---|
+| `chr` | Chromosome (`chr1` or `1`) |
+| `start` | Start position, 0-based |
+| `end` | End position, exclusive |
+| `label` | Class label (used to stratify the split) |
+| `sequence` | DNA sequence (`end - start` bases) |
+
+Additional columns are ignored. Coordinates must match the genome version of the selected
+species.
+
+## Output
+
+Written to `output_dir`:
+
+| File | Content |
+|---|---|
+| `train.tsv`, `dev.tsv`, `test.tsv` | `Sequence`, `Label` |
+| `sequence_train.tsv`, `sequence_dev.tsv`, `sequence_test.tsv` | ReMap signal per base (`nucleotide_1` … `nucleotide_N`); row *i* corresponds to row *i* of the matching split file |
+| `Remap_signal_<name>.tsv` | Full table before splitting |
+
+The split is stratified by label (70 / 15 / 15, seed 42). Use `seed=` to change it.
+
+---
+
+## Supported species
+
+| `species=` | Genome |
+|---|---|
+| `"human"` | hg38 |
+| `"mouse"` | mm39 |
+| any other name | provide `bigwig=` (see below) |
+
+### Other species or your own signal track
 
 ```python
 rs.make_splits("my_file.tsv", species="zebrafish", output_dir="out_fish/",
@@ -61,5 +104,29 @@ remap-signal split --input my_file.tsv --species zebrafish --output-dir out_fish
                    --bigwig /path/to/zebrafish_signal.bw
 ```
 
-The genome version of your coordinates must match the species (human hg38, mouse mm39) or
-your bigWig.
+A bigWig passed with `bigwig=` is also used for human and mouse when provided.
+
+---
+
+## Data sources and citation
+
+ReMap 2022 density tracks are provided by the ReMap project. If you use this package,
+please cite:
+
+> Hammal F, de Langen P, Bergon A, Lopez F, Ballester B. **ReMap 2022: a database of Human,
+> Mouse, Drosophila and Arabidopsis regulatory regions from an integrative analysis of
+> DNA-binding sequencing experiments.** *Nucleic Acids Research* 2022;50(D1):D316–D325.
+> https://doi.org/10.1093/nar/gkab996
+
+## Development
+
+```bash
+git clone https://github.com/NPAPINENI/Package_REMAP_SIGNAL.git
+cd Package_REMAP_SIGNAL
+python -m pip install -e ".[dev]"
+pytest
+```
+
+## License
+
+MIT © Nimisha Papineni
